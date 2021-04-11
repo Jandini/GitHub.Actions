@@ -1,0 +1,23 @@
+name: Delete Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Package version (e.g. 1.0.0-alpha)'
+        required: true         
+jobs:
+  delete:
+
+    runs-on: ubuntu-latest
+
+    steps:      
+    - name: Delete packages
+      uses: smartsquaregmbh/delete-old-packages@v0.3.1
+      with:
+        version-pattern: "^${{ github.event.inputs.versionName }}\\.\\d+$" 
+        keep: 0
+        names: |
+          ${{ github.event.repository.name }}
+
+    

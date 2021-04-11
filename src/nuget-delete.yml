@@ -1,0 +1,43 @@
+name: Nuget Delete
+
+on:
+   delete:
+     branches-ignore: [ 'develop', 'master', 'main' ]   
+
+defaults:
+  run:
+    working-directory: src
+    
+jobs:
+  delete:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with: 
+        fetch-depth: 0
+        
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+      
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+    
+    - name: Display GitVersion
+      run: | 
+         echo "${{ github.event.ref }}"
+         printenv
+      
+    - name: Delete packages
+      uses: smartsquaregmbh/delete-old-packages@v0.3.1
+      with:
+        version-pattern: "^${{ env.GITVERSION_MAJOR }}\\.${{ env.GITVERSION_MINOR }}\\.${{ env.GITVERSION_PATCH }}-${{ github.event.ref }}\\.\\d+$" 
+        keep: 0
+        names: |
+          ${{ github.event.repository.name }}
+
+    
