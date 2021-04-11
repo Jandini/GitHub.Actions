@@ -1,0 +1,53 @@
+name: Create Release
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Release version'
+        required: true
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with: 
+        fetch-depth: 0    
+    - name: Create release branch
+      run: git checkout -b release/${{ github.event.inputs.versionName }}
+    - name: Initialize mandatory git config
+      run: |
+        git config user.name "Jandini"
+        git config user.email matt.janda.kingston@gmail.com
+    - name: Update Changelog
+      run: |
+        npm i standard-version
+        ./node_modules/.bin/standard-version --skip.tag --release-as ${{ github.event.inputs.versionName }} --tag-prefix ""        
+      
+    - name: Push new branch
+      run: git push origin release/${{ github.event.inputs.versionName }}
+    - name: Create pull request into master
+      uses: thomaseizinger/create-pull-request@1.0.0
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        head: release/${{ github.event.inputs.versionName }}
+        base: master
+        title: ${{ github.event.inputs.versionName }} into master
+        reviewers: ${{ github.event.issue.user.login }}
+        body: |
+          Hi!
+          This PR was created in response workflow running.
+          I've updated the version name and code commit: ${{ steps.make-commit.outputs.commit }}.
+    - name: Create pull request to develop
+      uses: thomaseizinger/create-pull-request@1.0.0
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        head: release/${{ github.event.inputs.versionName }}
+        base: develop
+        title: ${{ github.event.inputs.versionName }} into develop
+        reviewers: ${{ github.event.issue.user.login }}
+        body: |
+            Hi!
+            This PR was created in response workflow running.
+            I've updated the version name and code commit: ${{ steps.make-commit.outputs.commit }}.
