@@ -1,8 +1,8 @@
-name: NuGet Push
+name: NuGet push package
 
 on:
   push:
-     branches: [ 'develop', 'master', 'main' ]   
+     branches: [ 'develop', 'master', 'main', 'feature/*' ]
 
 defaults:
   run:

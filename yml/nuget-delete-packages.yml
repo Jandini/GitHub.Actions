@@ -1,4 +1,4 @@
-name: Nuget Delete
+name: Nuget delete packages
 
 on:
    delete:

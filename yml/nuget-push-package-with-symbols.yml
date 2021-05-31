@@ -1,8 +1,8 @@
-name: NuGet Push with Symbols
+name: NuGet push package with symbols
 
 on:
   push:
-     branches-ignore: [ 'develop', 'master' ]   
+     branches-ignore: [ 'develop', 'master' ]
 
 defaults:
   run:

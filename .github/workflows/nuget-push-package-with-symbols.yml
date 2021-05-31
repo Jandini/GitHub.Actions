@@ -1,0 +1,49 @@
+name: NuGet push package with symbols
+
+on:
+  push:
+     branches-ignore: [ 'develop', 'master' ]
+
+defaults:
+  run:
+    working-directory: src
+    
+jobs:
+  nuget:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with: 
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1      
+      with:
+        dotnet-version: 5.0.x
+        
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: '5.x'
+      
+    - name: Determine Version
+      uses: gittools/actions/gitversion/execute@v0.9.7
+    
+    - name: Display GitVersion
+      run: | 
+         echo "${{ github.event.ref }}"
+         printenv
+
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal          
+    - name: Pack
+      run: dotnet pack --configuration Release --no-restore /p:IncludeSymbols=true
+    - name: Push    
+      run: dotnet nuget push "../bin/*symbols.nupkg" -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate
