@@ -2,11 +2,31 @@
 
 Collection of GitHub actions.
 
-
-
 ## Workflows
 
 
+
+Set working directory if the solution file is not in root folder.
+
+```
+defaults:
+  run:
+    working-directory: src
+```
+
+
+
+Add `fetch-depth: 0` if using `GitVersion.MsBuild`  
+
+```
+    - uses: actions/checkout@v2
+      with: 
+        fetch-depth: 0    
+```
+
+
+
+## 
 
 
 
