@@ -23,10 +23,10 @@ jobs:
     - name: Update Changelog
       run: |
         npm i standard-version
-        ./node_modules/.bin/standard-version --skip.tag --release-as ${{ github.event.inputs.versionName }} --tag-prefix ""        
+        ./node_modules/.bin/standard-version --release-as ${{ github.event.inputs.versionName }} --tag-prefix ""        
       
     - name: Push new branch
-      run: git push origin release/${{ github.event.inputs.versionName }}
+      run: git push origin release/${{ github.event.inputs.versionName }} --follow-tags
     - name: Create pull request into master
       uses: thomaseizinger/create-pull-request@1.0.0
       with:
